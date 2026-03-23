@@ -34,7 +34,7 @@ There will be somewhere that handles with:
 - break walls for fusing overlapped rooms (if room placement are completely random)
 - break walls for connecting hallway (basically breaking walls at desired blocks)
 
-## Algorithm
+## 2 Algorithm
 
 ### Rooms
 Rooms have an origin coordinate at the bottom left. There are two ways to put them: 
@@ -46,6 +46,33 @@ generate random origin and size, repeate until total area > 50% of grid. This br
 - Careful  
 place a room, record it, then place another which does not fall into its territory, repeat. This approach is more complicated and does not produce overlaps, which is actually a way of dismorphing room shapes. 
 
+### Graphing  
+  Instead of just randomly place rooms, randomly place dots. Randomly place a dot on an empty grid, which will be the ancestor block. Then continue recursively doing 2 things, randomly select dot and grow dot. 
+
+  - for some random dot chosen, it is an ancestor by its own
+  - for an ancestor block, grow its territory by spawning blocks around it, side by side, in some clever way so they get into shape. This way ancestors spawned earlier grows to larger, continuous area, and later ancestors grows into smaller areas that disfigures the map.     
+  
+  Now is the genius part. Every block is a vertex in a graph, that's right. Instead of drawing "rooms and corridors" on the grid, this approach would be storing singular blocks into a graph, their physical distance becomes weigth of edges. Also, there would be a topology that represents areas: every block (vertex) would be pointing to another block, eventually ending at a single block which is the ancestor. When there are gaps in the grid, different blocks points to different ancestor, which on the graph is represented as disconnected. Let's call these disconnected areas with different ancestors "continent". When continents grow, they are separated by space, and eventually comes in contact. At this time the two continents merges and one ancestor now points to another, being one big continent with one ancestor. No hallway is specifically needed.   
+
+  This spawning ancestors and growing, merging continents stops when `totalArea > 50% grid && noDisconnectedContinent`.   
+
+  Everything is "reduced" to a graph problem. Amazing. I'm such a genius. This also means that I can just use Java.util.graph if there is one, without need of making my own implementation. After all this project is about software engineering rather than data structure.   
+
+  There will be some features about this graph. 
+  1. It has one single root at the end.   
+  For every continent it has only one ancestor (root), and when continents merge there will be only one ancestor since the other is added to it. Since every continent will be and should be connected eventually, the whole graph will have only one root. 
+  2. It has a tree like structure.   
+  Every continent has one root, every non-root vertex would point to another vertex that eventually points to the root, or simply points to the root. Therefore, every non-root vertex will trace to one root, with no cycle, no second root. 
+  3. It has a DAG like structure.   
+  The only precedence that matters is that vertices belongs to root, so however the other vertices points to one another does not matter. As long as the root is at the beginning of the topology sort. 
+  4. It is composed of all floor blocks.   
+  That's right, all the dots blocks mentioned are floors, because when the final world is finished, to build walls is simply wrapping the continent with wall blocks. Simply check if a block is `noneBlock && isNeighborToFloor()`, and place a wall block there. This also works for inland lakes. 
+
+This is probably the most brilliant idea I can ever have.   
+
+Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular. 
+  
+
 ### Hallway
 This is so much harder.  
 The point is to, first, have two rooms with no other room in between, then find two points on the wall that lies on the same line, connect them, break room wall and place hallway walls. All these steps are hard.   
@@ -54,6 +81,6 @@ The point is to, first, have two rooms with no other room in between, then find 
 1. A way to generate rooms is to select random dots in the grid, expand them randomly until they grow to various sizes. This way it is similar to using noise function which I don't know about. Maybe should try. 
 2. A hallway is also a type room, with special case that they are restricted to 3 blocks of width, or length. 
 
-### Saving
+## Persistence (Saving)
 First idea is storing the seeds used in the Random obj, in this way recreating the world means to run the whole algorithm again. 
 Another idea is to really store the grid in some way, toString, serializing, encoding; however, this approach requires implementation of io operation, which is very annoying.  
