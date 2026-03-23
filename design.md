@@ -68,7 +68,9 @@ place a room, record it, then place another which does not fall into its territo
   4. It is composed of all floor blocks.   
   That's right, all the dots blocks mentioned are floors, because when the final world is finished, to build walls is simply wrapping the continent with wall blocks. Simply check if a block is `noneBlock && isNeighborToFloor()`, and place a wall block there. This also works for inland lakes. 
 
-This is probably the most brilliant idea I can ever have.   
+This is probably the most brilliant idea I can ever have.  
+
+Another advantage of this approach is that growing the continent, we can add the new vertices into a queue, which just manages how we should populate the land. However, when continents merge the queues are harder to manage, as simply adding to the end may cause disproportion.  
 
 Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular. 
   
