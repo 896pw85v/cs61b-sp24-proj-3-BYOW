@@ -34,6 +34,13 @@ There will be somewhere that handles with:
 - break walls for fusing overlapped rooms (if room placement are completely random)
 - break walls for connecting hallway (basically breaking walls at desired blocks)
 
+### Graph
+- LENGTH, WIDTH: grid bound
+- int[2]: coordinate
+- ArrayList: stores list of roots
+- Java.util,hashMap: every node maps to a root, (a, b) → (c, d). This duplicates the space needed. 
+- 
+
 ## 2 Algorithm
 
 ### Rooms
@@ -72,8 +79,16 @@ This is probably the most brilliant idea I can ever have.
 
 Another advantage of this approach is that growing the continent, we can add the new vertices into a queue, which just manages how we should populate the land. However, when continents merge the queues are harder to manage, as simply adding to the end may cause disproportion.  
 
-Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular. 
-  
+Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular.
+
+### Another Idea
+We don't need to manage all blocks.   
+Generate a square room, pick any one block as origin, continue to spawn, no need to worry about overlapping.   
+When room area is large enough, for each origin build a path to the closest origin with one turn. The turn will likely fall in the room area so the hallway appears straight.   
+Since origins search the closest origin as if breadth first search, as if shortest path, should be good.   
+Origin search can be maintained in a graph or something during spawning to save runtime. 
+Path finding should find path with shortest length, using something like weightedd or dynamic planning.   
+
 
 ### Hallway
 This is so much harder.  
