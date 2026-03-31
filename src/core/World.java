@@ -9,17 +9,11 @@ import java.util.Random;
 public class World {
     int length;
     int width;
+    int area = 0;
     Random r;
     TETile[][] grid;
-//    while (notConnected && totalArea < 50%) {
-//        int[] dot = {a, b};
-//        if (dot not in dotList) {
-//            neighborHasDot() -> addToContinent()
-//            neighborHasDifferentRoot() -> merge()
-//        } else if (dot in dotList) {
-//            expand(), addtoContinent(), merge()
-//        }
-//    }
+    OriginNet originNet = new OriginNet();
+
     public World(int length, int width) {
         this.length = length;
         this.width = width;
@@ -27,13 +21,13 @@ public class World {
     }
 
     public void what() {
-        while () {
+        while (area < length * width / 2) { // checking area. i guess this will cause problem
             int x = r.nextInt(length);
             int y = r.nextInt(width);
             int l = r.nextInt(length - x);
             int w = r.nextInt(width - y);
             int [] origin = {r.nextInt(x, x + l), r.nextInt(y, y + w)};
-            heap.push(origin); // heap or queue that's used to build walls at the end
+            originNet.addNode(origin); // heap or queue that's used to build walls at the end
             for (int i = x; i < x + l; i++ ) {
                 for (int j = y; j < y + w; j ++) {
                     grid[i][j] = Tileset.FLOOR;
@@ -43,10 +37,13 @@ public class World {
         }
     }
 
+    // put rectangular room
     public void putTiles(int fromX, int fromY, int toX, int toY) {
         for (int i  = fromX; i <= toX; i++) {
             for (int j = fromY; j <= toY; j++) {
+                if (grid[i][j] == Tileset.FLOOR) continue;
                 grid[i][j] = Tileset.FLOOR;
+                area++;
             }
         }
     }
@@ -59,14 +56,16 @@ public class World {
         //from grid: traverse grid;
         //either is slow
         //either is fine
-        for (int[] target : heap) {
+        double minDistance = Double.MAX_VALUE;
+        int[] closest = originNet.origins().getFirst();
+        for (int[] target : originNet.origins()) {
             if (distanceBetween(x, y, target[0], target[1]) < minDistance) closest = target;
             // keep doing. i just realized on this step calculating straight distance is fine
             // the exact placement of blocks can be handled later
         }
+        originNet.mapChild(closest, node);
+        return closest;
     }
-
-
 
     public double distanceBetween(int a, int b, int c, int d) {
         if (b == d) return (double) c - a;

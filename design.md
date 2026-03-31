@@ -34,14 +34,41 @@ There will be somewhere that handles with:
 - break walls for fusing overlapped rooms (if room placement are completely random)
 - break walls for connecting hallway (basically breaking walls at desired blocks)
 
-### Graph
+### [Disposed] Graph
 - LENGTH, WIDTH: grid bound
 - int[2]: coordinate
 - ArrayList: stores list of roots
 - Java.util,hashMap: every node maps to a root, (a, b) → (c, d). This duplicates the space needed. 
 
 ### Tree/Heap
-Used to store room origins for hallway connection. Should store them so when connecting, each is connected with the shortest distance from each other. 
+Used to store room origins for hallway connection. Should store them so when connecting, each is connected with the shortest distance from each other.
+It should a tree like structure, most importantly it cannot have cycles. 
+Wait it can have cycles. But for simplicity ignore cycles. 
+Make a tree structure, and every node adds itself as a child of the closest node. At the end will yield a tree that spans out of one node, and connects to the closest node one by one. 
+*Implementation*: Has to fulfill collection, to simplify things.  
+OK if we stick to java.util, we can use a hashMap to map parent to children, use any list to store origins. The code would look like: 
+```
+    for (int[] node : origins) {
+        if (map.contains(node)) { // skip if has no child
+          for (int[] target : map.get(node)) { // for every child in the set mapped to node
+            buildPath(node, target);
+          }
+        }
+    }
+    buildPath(int[] node, int[] target) {
+        // this is the hard part. have to find a path by blocks. 
+        /*
+        Idea: build from x to target_x, then build from y to target_y. 
+        Can vary by prioritizing the shorter/longer length. 
+        This works because we only build straight path with one turn. Well actually this is applicable to swiggly path. 
+        */
+    }
+```
+
+
+### Origins
+Origins are arbitrary point within a room that is used for connecting rooms. 
+any coordinate is denoted as two integers, for now we put them in a int[2]. 
 
 ## 2 Algorithm
 
