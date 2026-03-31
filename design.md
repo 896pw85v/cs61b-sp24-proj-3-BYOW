@@ -39,7 +39,9 @@ There will be somewhere that handles with:
 - int[2]: coordinate
 - ArrayList: stores list of roots
 - Java.util,hashMap: every node maps to a root, (a, b) → (c, d). This duplicates the space needed. 
-- 
+
+### Tree/Heap
+Used to store room origins for hallway connection. Should store them so when connecting, each is connected with the shortest distance from each other. 
 
 ## 2 Algorithm
 
