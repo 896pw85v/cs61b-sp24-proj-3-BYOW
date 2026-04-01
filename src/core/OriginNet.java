@@ -10,20 +10,20 @@ import java.util.HashSet;
  * Passing in a weird int[] would be catastrophic
  */
 public class OriginNet {
-    ArrayList<int[]> list = new ArrayList<>();
-    HashMap<int[], HashSet<int[]>> map = new HashMap<>();
+    public ArrayList<Origin> list = new ArrayList<>();
+    public HashMap<Origin, HashSet<Origin>> map = new HashMap<>();
 
     public OriginNet() {
         // do nothing
     }
 
-    public void addNode(int[] node) {
+    public void addNode(Origin node) {
         list.add(node);
     }
 
-    public void mapChild(int[] node, int[] child) {
+    public void mapChild(Origin node, Origin child) {
         if (map.containsKey(node)) {
-            HashSet<int[]> set = map.get(node);
+            HashSet<Origin> set = map.get(node);
             set.add(child);
             // this is actually equivalent to the line below
         } else {
@@ -32,8 +32,10 @@ public class OriginNet {
         }
     }
 
-    public ArrayList<int[]> origins() {
+    public ArrayList<Origin> origins() {
         return list;
     }
+
+
 
 }

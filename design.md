@@ -13,7 +13,7 @@ Saving should work by storing seeds.
 
 ## 1 Classes and Data Structure
 
-### Room
+### ~~Room~~
 
 - length
 - width
@@ -22,7 +22,7 @@ Saving should work by storing seeds.
 
 This is enough information to create room and have location, plus some methods like area(), draw(), etc., those work with the api. This should be information and not completely related to the placed tiles on the grid. The seperation makes the modification to walls easier. 
 
-### Hallway
+### ~~Hallway~~
 
 - start x, y
 - end x, y
@@ -34,13 +34,13 @@ There will be somewhere that handles with:
 - break walls for fusing overlapped rooms (if room placement are completely random)
 - break walls for connecting hallway (basically breaking walls at desired blocks)
 
-### [Disposed] Graph
+### ~~Graph~~
 - LENGTH, WIDTH: grid bound
 - int[2]: coordinate
 - ArrayList: stores list of roots
 - Java.util,hashMap: every node maps to a root, (a, b) → (c, d). This duplicates the space needed. 
 
-### Tree/Heap
+### OriginNet (more like origin tree)
 Used to store room origins for hallway connection. Should store them so when connecting, each is connected with the shortest distance from each other.
 It should a tree like structure, most importantly it cannot have cycles. 
 Wait it can have cycles. But for simplicity ignore cycles. 
@@ -67,12 +67,14 @@ OK if we stick to java.util, we can use a hashMap to map parent to children, use
 
 
 ### Origins
+*Update*: the smart ide showed me `record`, `Origin` much simpler.   
+*Update*: since hashmap needs hashing and it can't be default, created `Origin` class just for that.  
 Origins are arbitrary point within a room that is used for connecting rooms. 
-any coordinate is denoted as two integers, for now we put them in a int[2]. 
+any coordinate is denoted as two integers, for now we put them in a int[2].
 
 ## 2 Algorithm
 
-### Rooms
+### ~~Rooms~~
 Rooms have an origin coordinate at the bottom left. There are two ways to put them: 
 - Random  
 generate random origin and size, repeate until total area > 50% of grid. This bring 3 cases:
@@ -82,7 +84,7 @@ generate random origin and size, repeate until total area > 50% of grid. This br
 - Careful  
 place a room, record it, then place another which does not fall into its territory, repeat. This approach is more complicated and does not produce overlaps, which is actually a way of dismorphing room shapes. 
 
-### Graphing  
+### ~~Graphing~~
   Instead of just randomly place rooms, randomly place dots. Randomly place a dot on an empty grid, which will be the ancestor block. Then continue recursively doing 2 things, randomly select dot and grow dot. 
 
   - for some random dot chosen, it is an ancestor by its own
@@ -110,7 +112,7 @@ Another advantage of this approach is that growing the continent, we can add the
 
 Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular.
 
-### Another Idea
+### Room with Origin
 We don't need to manage all blocks.   
 Generate a square room, pick any one block as origin, continue to spawn, no need to worry about overlapping.   
 When room area is large enough, for each origin build a path to the closest origin with one turn. The turn will likely fall in the room area so the hallway appears straight.   
@@ -119,9 +121,15 @@ Origin search can be maintained in a graph or something during spawning to save 
 Path finding should find path with shortest length, using something like weightedd or dynamic planning.   
 
 
-### Hallway
+### ~~Hallway~~
 This is so much harder.  
 The point is to, first, have two rooms with no other room in between, then find two points on the wall that lies on the same line, connect them, break room wall and place hallway walls. All these steps are hard.   
+
+### Walls
+No matter which idea is implemented, this one stays. 
+Iterate through every block, if floor skip. If empty, check if has floor neighbour, put wall.   
+This makes sure every floor is not exposed to void, even though rare cases a single wall in the middle of the room occurs, but it's fine.  
+We can also make it faster by tracking exterior during spawning, but it's not so important at this stage. 
 
 ### Ideas
 1. A way to generate rooms is to select random dots in the grid, expand them randomly until they grow to various sizes. This way it is similar to using noise function which I don't know about. Maybe should try. 

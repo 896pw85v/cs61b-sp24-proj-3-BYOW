@@ -26,7 +26,7 @@ public class World {
             int y = r.nextInt(width);
             int l = r.nextInt(length - x);
             int w = r.nextInt(width - y);
-            int [] origin = {r.nextInt(x, x + l), r.nextInt(y, y + w)};
+            Origin origin = new Origin(r.nextInt(x, x + l), r.nextInt(y, y + w));
             originNet.addNode(origin); // heap or queue that's used to build walls at the end
             for (int i = x; i < x + l; i++ ) {
                 for (int j = y; j < y + w; j ++) {
@@ -48,18 +48,18 @@ public class World {
         }
     }
 
-    public int[] findClosest(int[] node) {
-        if (node == null || node.length != 2) return null;
-        int x= node[0], y = node[1];
+    public Origin findClosest(Origin node) {
+        if (node == null) return null;
+        int x= node.x(), y = node.y();
         // from the tree? from the grid? any existing node would be in both.
         //from tree: traverse tree;
         //from grid: traverse grid;
         //either is slow
         //either is fine
         double minDistance = Double.MAX_VALUE;
-        int[] closest = originNet.origins().getFirst();
-        for (int[] target : originNet.origins()) {
-            if (distanceBetween(x, y, target[0], target[1]) < minDistance) closest = target;
+        Origin closest = originNet.origins().getFirst();
+        for (Origin target : originNet.origins()) {
+            if (distanceBetween(x, y, target.x(), target.y()) < minDistance) closest = target;
             // keep doing. i just realized on this step calculating straight distance is fine
             // the exact placement of blocks can be handled later
         }
