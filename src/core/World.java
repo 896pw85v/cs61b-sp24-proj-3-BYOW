@@ -18,24 +18,41 @@ public class World {
         this.length = length;
         this.width = width;
         r = new Random();
+        grid = new TETile[length][width];
+        for (int i  = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                if (grid[i][j] == Tileset.FLOOR) continue;
+                grid[i][j] = Tileset.NOTHING;
+            }
+        }
     }
 
     public void what() {
         while (area < length * width / 2) { // checking area. i guess this will cause problem
-            int x = r.nextInt(length);
-            int y = r.nextInt(width);
-            int l = r.nextInt(length - x);
-            int w = r.nextInt(width - y);
-            Origin origin = new Origin(r.nextInt(x, x + l), r.nextInt(y, y + w));
+            int x = r.nextInt(length - 3);
+            int y = r.nextInt(width - 3);
+            int xp = r.nextInt(x, length - 1);
+            int yp = r.nextInt(y, width - 1);
+            int ox;
+            int oy;
+            if (x == xp) {
+                ox = x;
+            } else {
+                ox = r.nextInt(x, xp);
+            }
+            if (y == yp) {
+                oy = y;
+            } else {
+                oy = r.nextInt(y, yp);
+            }
+            Origin origin = new Origin(ox, oy);
             originNet.addNode(origin); // heap or queue that's used to build walls at the end
-            for (int i = x; i < x + l; i++ ) {
-                for (int j = y; j < y + w; j ++) {
-                    grid[i][j] = Tileset.FLOOR;
-                }
-            } // this finishes a room, continue
-            putTiles(x, y, x + l, y + w);
+
+            putTiles(x, y, xp, yp);
         }
     }
+
+
 
     // put rectangular room
     public void putTiles(int fromX, int fromY, int toX, int toY) {
@@ -56,6 +73,8 @@ public class World {
         //from grid: traverse grid;
         //either is slow
         //either is fine
+        // even though traversing the tree seem slow, but implementation is based on hashmap, super fast
+        // and it
         double minDistance = Double.MAX_VALUE;
         Origin closest = originNet.origins().getFirst();
         for (Origin target : originNet.origins()) {
@@ -71,6 +90,10 @@ public class World {
         if (b == d) return (double) c - a;
         if (a == c) return (double) d - b;
         return Math.sqrt(((double) c - (double) a) / ((double) d - (double) b));
+    }
+
+    public TETile[][] world() {
+        return grid;
     }
 
 }
