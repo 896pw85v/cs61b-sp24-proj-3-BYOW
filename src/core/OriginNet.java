@@ -18,6 +18,9 @@ public class OriginNet {
     }
 
     public void addNode(Origin node) {
+
+        Origin parent = findClosest(node);
+        mapChild(parent, node);
         list.add(node);
     }
 
@@ -36,6 +39,31 @@ public class OriginNet {
         return list;
     }
 
+    public Origin findClosest(Origin node) {
+        if (node == null) return null;
+        int x= node.x(), y = node.y();
+        // from the tree? from the grid? any existing node would be in both.
+        //from tree: traverse tree;
+        //from grid: traverse grid;
+        //either is slow
+        //either is fine
+        // even though traversing the tree seem slow, but implementation is based on hashmap, super fast
+        // and it
+        double minDistance = Double.MAX_VALUE;
+        Origin closest = new Origin(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        for (Origin target : list) {
+            if (distanceBetween(x, y, target.x(), target.y()) < minDistance) closest = target;
+            // keep doing. i just realized on this step calculating straight distance is fine
+            // the exact placement of blocks can be handled later
+        }
+        mapChild(closest, node);
+        return closest;
+    }
 
+    public double distanceBetween(int a, int b, int c, int d) {
+        if (b == d) return (double) c - a;
+        if (a == c) return (double) d - b;
+        return Math.sqrt(((double) c - (double) a) / ((double) d - (double) b));
+    }
 
 }

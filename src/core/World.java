@@ -52,6 +52,8 @@ public class World {
 
             putTiles(x, y, xp, yp);
         }
+        buildPath();
+        buildWall();
     }
 
 
@@ -67,37 +69,84 @@ public class World {
         }
     }
 
-    public Origin findClosest(Origin node) {
-        if (node == null) return null;
-        int x= node.x(), y = node.y();
-        // from the tree? from the grid? any existing node would be in both.
-        //from tree: traverse tree;
-        //from grid: traverse grid;
-        //either is slow
-        //either is fine
-        // even though traversing the tree seem slow, but implementation is based on hashmap, super fast
-        // and it
-        double minDistance = Double.MAX_VALUE;
-        Origin closest = originNet.origins().getFirst();
-        for (Origin target : originNet.origins()) {
-            if (distanceBetween(x, y, target.x(), target.y()) < minDistance) closest = target;
-            // keep doing. i just realized on this step calculating straight distance is fine
-            // the exact placement of blocks can be handled later
-        }
-        originNet.mapChild(closest, node);
-        return closest;
-    }
 
-    public double distanceBetween(int a, int b, int c, int d) {
-        if (b == d) return (double) c - a;
-        if (a == c) return (double) d - b;
-        return Math.sqrt(((double) c - (double) a) / ((double) d - (double) b));
-    }
+
+
 
     public TETile[][] world() {
         return grid;
     }
 
+    public void buildPath() {
+        for (Origin parent : originNet.list) {
+            if (!originNet.map.containsKey(parent)) continue;
+            for (Origin child : originNet.map.get(parent)) {
+                connectOrigins(parent, child);
+            }
+        }
+    }
+
+    public void connectOrigins(Origin parent, Origin child) {
+        int a = parent.x(); int b = parent.y();
+        int m = child.x(); int n = child.y();
+        if (a >= m) {
+            if (b >= n) pave(m, n, a, b);
+            else pave(m, a, b, n);
+        } else {
+            if (b >= n) pave(a, n, m, b);
+            else pave(a, b, m, n);
+        }
+
+    }
+
+    public void pave(int fromX, int fromY, int toX, int toY) {
+        if (toX - fromX >= toY - fromY) {
+            for (int i = fromX; i <= toX; i++) {
+                grid[i][fromY] = Tileset.FLOOR;
+            }
+            for (int i = fromY; i <= toY; i++) {
+                grid[toX][i] = Tileset.FLOOR;
+            }
+
+        } else {
+            for (int i = fromX; i <= toX; i++) {
+                grid[i][fromY] = Tileset.FLOOR;
+            }
+            for (int i = fromY; i <= toY; i++) {
+                grid[toX][i] = Tileset.FLOOR;
+            }
+        }
+    }
+
+    public void buildWall() {
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                if (detectFloor(i, j)) grid[i][j] = Tileset.WALL;
+            }
+        }
+    }
+
+    public boolean detectFloor(int x, int y) {
+        if (grid[x][y] == Tileset.FLOOR) return false;
+        int[] dr = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dc = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+        for (int i = 0; i < 8; i++) {
+            int nr = x + dr[i];
+            int nc = y + dc[i];
+
+            // Skip if out of bounds
+            if (nr < 0 || nr >= length || nc < 0 || nc >= width) {
+                continue;
+            }
+
+            if (grid[nr][nc] == Tileset.FLOOR) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 /*
