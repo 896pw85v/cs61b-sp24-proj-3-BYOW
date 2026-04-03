@@ -29,10 +29,12 @@ public class World {
 
     public void what() {
         while (area < length * width / 2) { // checking area. i guess this will cause problem
-            int x = r.nextInt(length - 3);
-            int y = r.nextInt(width - 3);
-            int xp = r.nextInt(x, length - 1);
-            int yp = r.nextInt(y, width - 1);
+            int x = r.nextInt(1, length - 3);
+            int y = r.nextInt(1, width - 3);
+            int xp = r.nextInt(x + 1, length - 1);
+            int yp = r.nextInt(y + 1, width - 1);
+            if (xp - x > 10) xp = x + 10;
+            if (yp - y > 10) yp = y + 10;
             int ox;
             int oy;
             if (x == xp) {

@@ -13,12 +13,14 @@ public class WorldSomeTest {
     @Test
     void testGenerateRoom() {
         // [ ] [1] [ ] [ ] [ ] [ ] [ ] [7] [ ] [ ] 10
-        int x = r.nextInt(length - 3);
-        int y = r.nextInt(width - 3);
+        int x = r.nextInt(1, length - 3);
+        int y = r.nextInt(1, width - 3);
 
+        int xp = r.nextInt(x + 1, length - 1);
+        int yp = r.nextInt(y + 1, width - 1);
 
-        int xp = r.nextInt(x, length - 1);
-        int yp = r.nextInt(y, width - 1);
+        if (xp - x > 15) xp = x + 15;
+        if (yp - y > 15) yp = y + 15;
         int ox;
         int oy;
         if (x == xp) {
@@ -33,9 +35,10 @@ public class WorldSomeTest {
         }
 
         Origin origin = new Origin(ox, oy);
+        System.out.println(origin + " " + x + "-" + xp + ", " + y + "-" + yp);
         assertTrue(origin.x() <= xp, "smaller than right edge");
         assertTrue(origin.x() >= x, "smaller than right edge");
-        assertTrue(origin.x() <= yp, "smaller than right edge");
-        assertTrue(origin.x() >= y, "smaller than right edge");
+        assertTrue(origin.y() <= yp, "smaller than right edge");
+        assertTrue(origin.y() >= y, "smaller than right edge");
     }
 }
