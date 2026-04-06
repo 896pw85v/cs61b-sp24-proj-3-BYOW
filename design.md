@@ -119,7 +119,8 @@ When room area is large enough, for each origin build a path to the closest orig
 Since origins search the closest origin as if breadth first search, as if shortest path, should be good.   
 Origin search can be maintained in a graph or something during spawning to save runtime. 
 Path finding should find path with shortest length, using something like weightedd or dynamic planning.   
-
+~~Try this: When generating new rooms, detect first whether the point is a floor. If yes, skip; if no, spawn room. This way we can avoid a lot of overlaps.~~  
+No it doesn't work. 
 
 ### ~~Hallway~~
 This is so much harder.  

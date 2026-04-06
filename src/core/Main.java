@@ -8,11 +8,11 @@ public class Main {
 
 
 
-        World world = new World(60, 50);
+        World world = new World(70, 40);
         world.what();
 
         TERenderer renderer = new TERenderer();
-        renderer.initialize(60, 50);
+        renderer.initialize(70, 40);
         renderer.renderFrame(world.world());
 
     }

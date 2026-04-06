@@ -5,7 +5,7 @@ import tileengine.Tileset;
 
 import java.util.Random;
 
-// i will try to avoid recursion
+
 public class World {
     int length;
     int width;
@@ -28,13 +28,20 @@ public class World {
     }
 
     public void what() {
-        while (area < length * width / 2) { // checking area. i guess this will cause problem
+        while (area < length * width / 2) { // checking area. I guess this will cause problem
+
             int x = r.nextInt(1, length - 3);
             int y = r.nextInt(1, width - 3);
+            if (grid[x][y] == Tileset.FLOOR) continue;
+
             int xp = r.nextInt(x + 1, length - 1);
             int yp = r.nextInt(y + 1, width - 1);
+
+
             if (xp - x > 10) xp = x + 10;
             if (yp - y > 10) yp = y + 10;
+            if (grid[xp][yp] == Tileset.FLOOR) continue;
+
             int ox;
             int oy;
             if (x == xp) {
@@ -47,10 +54,12 @@ public class World {
             } else {
                 oy = r.nextInt(y, yp);
             }
-            Origin origin = new Origin(ox, oy);
-            originNet.addNode(origin); // heap or queue that's used to build walls at the end
+//            if (grid[ox][oy] == Tileset.FLOOR) continue;
 
-            putTiles(x, y, xp, yp);
+            Origin origin = new Origin(ox, oy);
+            originNet.addNode(origin);
+
+            buildRoom(x, y, xp, yp);
         }
         buildPath();
         buildWall();
@@ -59,7 +68,7 @@ public class World {
 
 
     // put rectangular room
-    public void putTiles(int fromX, int fromY, int toX, int toY) {
+    public void buildRoom(int fromX, int fromY, int toX, int toY) {
         for (int i  = fromX; i <= toX; i++) {
             for (int j = fromY; j <= toY; j++) {
                 if (grid[i][j] == Tileset.FLOOR) continue;
@@ -68,10 +77,6 @@ public class World {
             }
         }
     }
-
-
-
-
 
     public TETile[][] world() {
         return grid;
@@ -90,16 +95,16 @@ public class World {
         int a = parent.x(); int b = parent.y();
         int m = child.x(); int n = child.y();
         if (a >= m) {
-            if (b >= n) pave(m, n, a, b);
-            else pave(m, a, b, n);
+            if (b >= n) pavePath(m, n, a, b);
+            else pavePath(m, a, b, n);
         } else {
-            if (b >= n) pave(a, n, m, b);
-            else pave(a, b, m, n);
+            if (b >= n) pavePath(a, n, m, b);
+            else pavePath(a, b, m, n);
         }
 
     }
 
-    public void pave(int fromX, int fromY, int toX, int toY) {
+    public void pavePath(int fromX, int fromY, int toX, int toY) {
         if (toX - fromX >= toY - fromY) {
             for (int i = fromX; i <= toX; i++) {
                 grid[i][fromY] = Tileset.FLOOR;
@@ -147,11 +152,9 @@ public class World {
 
         return false;
     }
-}
 
-/*
- is expand even necessary?
- it's to prevent randomness. if random is truly uniform, simply adding blocks by random
- would result in a map almost full, evenly filled like QR code.
- since expanding is necessary, how to do that?
- */
+    public void setSeed(int seed) {
+        r = new Random(seed);
+        // but this is very dangerous, cuz anyone can change seed anytime. should make it a constructor.
+    }
+}

@@ -19,7 +19,14 @@ public class AutograderBuddy {
      */
     public static TETile[][] getWorldFromInput(String input) {
 
-        throw new RuntimeException("Please fill out AutograderBuddy!");
+        String num = input.substring(1, input.toLowerCase().indexOf("s"));
+        int seed = Integer.parseInt(num);
+        World world = new World(50, 50);
+        world.setSeed(seed);
+        world.what();
+        return world.grid;
+
+//        throw new RuntimeException("Please fill out AutograderBuddy!");
 
     }
 
