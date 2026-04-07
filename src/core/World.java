@@ -32,9 +32,8 @@ public class World {
 
     public void what() {
 
-        while (area < length * width / 20) { // checking area. I guess this will cause problem
+        while (area < length * width / 5) { // checking area. I guess this will cause problem
             ren.renderFrame(grid);
-
 
             int x = r.nextInt(1, length - 3);
             int y = r.nextInt(1, width - 3);
@@ -76,12 +75,12 @@ public class World {
     public void buildRoom(int fromX, int fromY, int toX, int toY) {
         for (int i  = fromX; i <= toX; i++) {
             for (int j = fromY; j <= toY; j++) {
-                ren.renderFrame(grid);
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//                ren.renderFrame(grid);
+//                try {
+//                    Thread.sleep(200);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
                 if (grid[i][j] == Tileset.FLOOR) continue;
                 grid[i][j] = Tileset.FLOOR;
                 area++;
@@ -108,12 +107,39 @@ public class World {
         System.out.println(parent + " to " + child);
         int a = parent.x(); int b = parent.y();
         int m = child.x(); int n = child.y();
-        if (a >= m) {
-            if (b >= n) pavePath(m, n, a, b);
-            else pavePath(m, b, a, n);
+
+        if (a < m) {
+            if (b < n) {
+                for (int i = a; i <= m; i++) {
+                    grid[i][b] = Tileset.FLOOR;
+                }
+                for (int i = b; i <= n; i++) {
+                    grid[m][i] = Tileset.FLOOR;
+                }
+            } else {
+                for (int i = a; i <= m; i++) {
+                    grid[i][b] = Tileset.FLOOR;
+                }
+                for (int i = n; i <= b; i++) {
+                    grid[m][i] = Tileset.FLOOR;
+                }
+            }
         } else {
-            if (b >= n) pavePath(a, n, m, b);
-            else pavePath(a, b, m, n);
+            if (b < n) {
+                for (int i = m; i <= a; i++) {
+                    grid[i][b] = Tileset.FLOOR;
+                }
+                for (int i = b; i <= n; i++) {
+                    grid[m][i] = Tileset.FLOOR;
+                }
+            } else {
+                for (int i = m; i <= a; i++) {
+                    grid[i][b] = Tileset.FLOOR;
+                }
+                for (int i = n; i <= b; i++) {
+                    grid[m][i] = Tileset.FLOOR;
+                }
+            }
         }
 
     }

@@ -27,7 +27,7 @@ public class OriginNet {
         for (Origin origin : list) {
 
             Origin parent = findClosest(origin);
-            mapChild(parent, origin);
+            mapChild(origin, parent);
         }
     }
 
@@ -58,20 +58,21 @@ public class OriginNet {
         // and it
         double minDistance = Double.MAX_VALUE;
         Origin closest = new Origin(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        double min;
         for (Origin target : list) {
-            if (target.equals(node)) continue;
-            if (distanceBetween(x, y, target.x(), target.y()) < minDistance) closest = target;
-            // keep doing. i just realized on this step calculating straight distance is fine
-            // the exact placement of blocks can be handled later
+            if (target.equals(node) || map.containsKey(target) && map.get(target).contains(node)) continue;
+            min = distanceBetween(x, y, target.x(), target.y());
+            if (min < minDistance) {
+                closest = target;
+                minDistance = min;
+            }
+
         }
-        mapChild(closest, node);
+//        mapChild(closest, node);
         return closest;
     }
 
     public double distanceBetween(int a, int b, int c, int d) {
-//        if (b == d) return (double) c - a;
-//        if (a == c) return (double) d - b;
-//        return Math.sqrt(((double) c - (double) a) / ((double) d - (double) b));
         return Math.sqrt(Math.pow(a - c, 2) + Math.pow(b - d, 2));
     }
 
