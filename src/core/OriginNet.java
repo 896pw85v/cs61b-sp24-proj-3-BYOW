@@ -47,6 +47,7 @@ public class OriginNet {
     }
 
     public Origin findClosest(Origin node) {
+        if (list.size() == 0) return node;
         if (node == null) return null;
         int x= node.x(), y = node.y();
         // from the tree? from the grid? any existing node would be in both.
@@ -59,8 +60,9 @@ public class OriginNet {
         double minDistance = Double.MAX_VALUE;
         Origin closest = new Origin(Integer.MAX_VALUE, Integer.MAX_VALUE);
         double min;
+        // clearly a node gets the max node instead of a real node
         for (Origin target : list) {
-            if (target.equals(node) || map.containsKey(target) && map.get(target).contains(node)) continue;
+            if (target.equals(node)  || map.containsKey(target) && map.get(target).contains(node)) continue;
             min = distanceBetween(x, y, target.x(), target.y());
             if (min < minDistance) {
                 closest = target;

@@ -15,10 +15,11 @@ public class Main {
 //        706826667     dead end
 //        -1083386485   array out of bound
 //        -1310781681   disconnected
+//        655081307     index 70 out of 70
 
         World world = new World(70, 40);
         world.setSeed(seed);
-//        world.setSeed(1505171948);
+        world.setSeed(-1310781681);
         world.what();
 
         TERenderer renderer = new TERenderer();

@@ -32,7 +32,7 @@ public class World {
 
     public void what() {
 
-        while (area < length * width / 5) { // checking area. I guess this will cause problem
+        while (area < length * width / 20) { // checking area. I guess this will cause problem
             ren.renderFrame(grid);
 
             int x = r.nextInt(1, length - 3);
