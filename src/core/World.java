@@ -1,5 +1,6 @@
 package core;
 
+import tileengine.TERenderer;
 import tileengine.TETile;
 import tileengine.Tileset;
 
@@ -13,6 +14,7 @@ public class World {
     Random r;
     TETile[][] grid;
     OriginNet originNet = new OriginNet();
+    TERenderer ren = new TERenderer();
 
     public World(int length, int width) {
         this.length = length;
@@ -25,42 +27,45 @@ public class World {
                 grid[i][j] = Tileset.NOTHING;
             }
         }
+        ren.initialize(length, width);
     }
 
     public void what() {
-        while (area < length * width / 2) { // checking area. I guess this will cause problem
+
+        while (area < length * width / 20) { // checking area. I guess this will cause problem
+            ren.renderFrame(grid);
+
 
             int x = r.nextInt(1, length - 3);
             int y = r.nextInt(1, width - 3);
-            if (grid[x][y] == Tileset.FLOOR) continue;
+//            if (grid[x][y] == Tileset.FLOOR) continue;
 
             int xp = r.nextInt(x + 1, length - 1);
             int yp = r.nextInt(y + 1, width - 1);
 
 
-            if (xp - x > 10) xp = x + 10;
-            if (yp - y > 10) yp = y + 10;
-            if (grid[xp][yp] == Tileset.FLOOR) continue;
+            if (xp - x > 5) xp = x + 5;
+            if (yp - y > 5) yp = y + 5;
+//            if (grid[xp][yp] == Tileset.FLOOR) continue;
 
             int ox;
             int oy;
-            if (x == xp) {
-                ox = x;
-            } else {
-                ox = r.nextInt(x, xp);
-            }
-            if (y == yp) {
-                oy = y;
-            } else {
-                oy = r.nextInt(y, yp);
-            }
+
+                ox = r.nextInt(x, xp + 1);
+
+                oy = r.nextInt(y, yp + 1);
+
 //            if (grid[ox][oy] == Tileset.FLOOR) continue;
+
+            assert x < ox && ox < xp;
+            assert y < oy && oy < yp;
 
             Origin origin = new Origin(ox, oy);
             originNet.addNode(origin);
 
             buildRoom(x, y, xp, yp);
         }
+        originNet.buildMapping();
         buildPath();
         buildWall();
     }
@@ -71,6 +76,12 @@ public class World {
     public void buildRoom(int fromX, int fromY, int toX, int toY) {
         for (int i  = fromX; i <= toX; i++) {
             for (int j = fromY; j <= toY; j++) {
+                ren.renderFrame(grid);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 if (grid[i][j] == Tileset.FLOOR) continue;
                 grid[i][j] = Tileset.FLOOR;
                 area++;
@@ -87,16 +98,19 @@ public class World {
             if (!originNet.map.containsKey(parent)) continue;
             for (Origin child : originNet.map.get(parent)) {
                 connectOrigins(parent, child);
+
             }
         }
     }
 
+    // this one is completely wrong
     public void connectOrigins(Origin parent, Origin child) {
+        System.out.println(parent + " to " + child);
         int a = parent.x(); int b = parent.y();
         int m = child.x(); int n = child.y();
         if (a >= m) {
             if (b >= n) pavePath(m, n, a, b);
-            else pavePath(m, a, b, n);
+            else pavePath(m, b, a, n);
         } else {
             if (b >= n) pavePath(a, n, m, b);
             else pavePath(a, b, m, n);
@@ -121,6 +135,7 @@ public class World {
                 grid[toX][i] = Tileset.FLOOR;
             }
         }
+
     }
 
     public void buildWall() {
