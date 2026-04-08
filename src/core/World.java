@@ -32,7 +32,7 @@ public class World {
 
     public void what() {
 
-        while (area < length * width / 20) { // checking area. I guess this will cause problem
+        while (area < length * width / 20) {
             ren.renderFrame(grid);
 
             int x = r.nextInt(1, length - 3);
@@ -64,7 +64,7 @@ public class World {
 
             buildRoom(x, y, xp, yp);
         }
-        originNet.buildMapping();
+        originNet.buildNet();
         buildPath();
         buildWall();
     }
@@ -94,8 +94,8 @@ public class World {
 
     public void buildPath() {
         for (Origin parent : originNet.list) {
-            if (!originNet.map.containsKey(parent)) continue;
-            for (Origin child : originNet.map.get(parent)) {
+            if (!originNet.net.containsKey(parent)) continue;
+            for (Origin child : originNet.net.get(parent)) {
                 connectOrigins(parent, child);
 
             }
@@ -105,11 +105,11 @@ public class World {
     // this one is completely wrong
     public void connectOrigins(Origin parent, Origin child) {
         ren.renderFrame(grid);
-        try { // tree heap;
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try { // tree heap;
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         System.out.println(parent + " to " + child);
         int a = parent.x(); int b = parent.y();
         int m = child.x(); int n = child.y();
@@ -150,25 +150,7 @@ public class World {
 
     }
 
-    public void pavePath(int fromX, int fromY, int toX, int toY) {
-        if (toX - fromX >= toY - fromY) {
-            for (int i = fromX; i <= toX; i++) {
-                grid[i][fromY] = Tileset.FLOOR;
-            }
-            for (int i = fromY; i <= toY; i++) {
-                grid[toX][i] = Tileset.FLOOR;
-            }
 
-        } else {
-            for (int i = fromX; i <= toX; i++) {
-                grid[i][fromY] = Tileset.FLOOR;
-            }
-            for (int i = fromY; i <= toY; i++) {
-                grid[toX][i] = Tileset.FLOOR;
-            }
-        }
-
-    }
 
     public void buildWall() {
         for (int i = 0; i < length; i++) {

@@ -23,8 +23,8 @@ public class OriginNetTest {
     @Test
     void testPutNode() {
         net.addNode(new Origin(1, 2));
-        net.mapChild(new Origin(1, 2), new Origin(3, 4));
-        assertTrue(net.map.get(new Origin(1, 2)).contains(new Origin(3, 4)));
+        net.insert(new Origin(1, 2), new Origin(3, 4));
+        assertTrue(net.net.get(new Origin(1, 2)).contains(new Origin(3, 4)));
     }
 
     @Test
@@ -32,10 +32,10 @@ public class OriginNetTest {
         Origin point12 = new Origin(1, 2);
         Origin point34 = new Origin(3, 4);
         net.addNode(point12);
-        net.mapChild(point12, point34);
-        assertTrue(net.map.get(new Origin(1, 2)).contains(new Origin(3, 4)));
-        net.map.get(point12).clear();
-        assertEquals(new HashSet<>(), net.map.get(point12), "modifying value is impossible");
-        assertNotSame(new HashSet<>(), net.map.get(point12));
+        net.insert(point12, point34);
+        assertTrue(net.net.get(new Origin(1, 2)).contains(new Origin(3, 4)));
+        net.net.get(point12).clear();
+        assertEquals(new HashSet<>(), net.net.get(point12), "modifying value is impossible");
+        assertNotSame(new HashSet<>(), net.net.get(point12));
     }
 }

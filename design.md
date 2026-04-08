@@ -65,6 +65,9 @@ OK if we stick to java.util, we can use a hashMap to map parent to children, use
     }
 ```
 However, the hashmap data structure doesn't maintain a tree-like structure during connection. And the algorithm failed to prevent cycles. 
+Need to design a tree. 
+
+
 
 ### Origins
 *Update*: the smart ide showed me `record`, `Origin` much simpler.   
@@ -124,6 +127,34 @@ Since origins search the closest origin as if breadth first search, as if shorte
 In the current design, with list and map, origins should not be connected during generating because the algorithm that adds new nodes is so simple that it doesn't maintain itself like a heap, making the scenario that even though a newly spawned node is a better candidate for connection, it is ignored.   
 In the new algorithm, the connection is executed after room generation; however, cycle is not prevented because simply looking for the closest origin would cause far land to connected to each other, especially with the list and map data structure. Tracing down the mapping would work but I want to avoid that because typical case is there is no cycle but the algorithm traced down the whole map, for every node. 
 **We need a tree-heap-like data structure.**  
+Here is the algorithm for maintaining a tree like structure. It works by calculating the distance between `o` and each `child`, and find the closest, then repeat for the closest. 
+If the closest is `parent`, end recursion. It still uses a hashmap but treats it as a tree. Instead of looking for the closest from the list, it looks for the closest in the tree, which is faster and ensures acyclicity.  
+However, it doesn't maintain itself like a heap, the structure is simply a tree with more than 2 branches. It has no rotation operation, nor has it red-black attributes, simply because I can't. 
+```
+    for (Origin o : list) {
+        tree.findClosest(o, tree.first); 
+    }
+
+    findClosest(o, parent) {
+        min = distance(o, parent);
+        for (Origin child : parent) {
+            if (distance(o, child) <= min) {
+              min = thisdistance;
+              closest = child;
+            }
+        }
+        if (closest = parent) tree.insert(o, parent); return;
+        findClosest(o, closest);
+    }
+```
+There is still some wrong closest. It's not the calculation. The tree traverses down branches, but the closest node is not guaranteed to be a child of the closest branch.
+In the image the red arrows are normal, a root points to its closest children. But the blue arrows are wrong and should be yellow. 
+I presume this happens cuz target was added, wrong node is already in the tree, but right node is not. 
+As a result, target connects to wrong node, since right node doesn't "exist". Then when right node is inserted into the tree, target doesn't bother to find it, because it was already iterated. 
+Fixing by inserting during spawn won't work because the list reflects the order of spawn. 
+
+![img_2.png](img_2.png)
+![img_1.png](img_1.png)
 Good news is we already have a simple function that calculates the distance, could be of use. 
 ~~Path finding should find path with shortest length, using something like weightedd or dynamic planning.~~ I don't even know what I'm saying here.  
 ~~Try this: When generating new rooms, detect first whether the point is a floor. If yes, skip; if no, spawn room. This way we can avoid a lot of overlaps.~~  

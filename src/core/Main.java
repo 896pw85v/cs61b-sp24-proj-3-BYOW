@@ -11,15 +11,17 @@ public class Main {
         Random r = new Random();
         int seed = r.nextInt();
         System.out.println(seed);
-//        1505171948    isolated room and dead end
+//        1505171948    wrong closest
 //        706826667     dead end
 //        -1083386485   array out of bound
 //        -1310781681   disconnected
 //        655081307     index 70 out of 70
+//        679430966     wrong closest (12, 12)
+//        552674602     wrong closest, with image
 
         World world = new World(70, 40);
         world.setSeed(seed);
-        world.setSeed(-1310781681);
+        world.setSeed(679430966);
         world.what();
 
         TERenderer renderer = new TERenderer();

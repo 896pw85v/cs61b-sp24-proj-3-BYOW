@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * idea of this class come from Wordnet. assume this works.
@@ -11,71 +12,85 @@ import java.util.HashSet;
  */
 public class OriginNet {
     public ArrayList<Origin> list = new ArrayList<>();
-    public HashMap<Origin, HashSet<Origin>> map = new HashMap<>();
+    public HashMap<Origin, HashSet<Origin>> net = new HashMap<>();
 
     public OriginNet() {
         // do nothing
     }
 
     public void addNode(Origin node) {
-
-
         list.add(node);
     }
 
-    public void buildMapping() {
+    public void buildNet() {
         for (Origin origin : list) {
-
-            Origin parent = findClosest(origin);
-            mapChild(origin, parent);
+//            Origin parent = findClosest(origin, list.getFirst(), distanceBetween(origin, list.getFirst()));
+            Origin parent = findClosest(origin, list.getFirst(), list.getFirst());
+            if (parent.equals(origin)) continue;
+            System.out.println(origin + " " + parent + " " + distanceBetween(origin, parent));
+            insert(parent, origin);
         }
     }
 
-    public void mapChild(Origin node, Origin child) {
-        if (map.containsKey(node)) {
-            HashSet<Origin> set = map.get(node);
+//    public Origin findClosest(Origin node, Origin parent, double min) {
+//        HashSet<Origin> targets = net.get(parent);
+//        if (targets == null) return parent;
+//        double minDistance = min;
+//        Origin closest = parent;
+//        double temp;
+//        Iterator<Origin> iterator = targets.iterator();
+//        while (iterator.hasNext()) {
+//            Origin target = iterator.next();
+//            temp = distanceBetween(node, target);
+//            if (temp <= distanceBetween(target, parent)) {
+//                iterator.remove();
+//                insert(node, target);
+//                continue;
+//            }
+//            if (temp < minDistance) {
+//                closest = target;
+//                minDistance = temp;
+//            }
+//        }
+//        if (minDistance == min && closest.equals(parent)) return parent;
+//        return findClosest(node, closest, minDistance);
+//    }
+
+    public Origin findClosest(Origin node, Origin parent, Origin closest) {
+//        System.out.println(parent);
+        if (distanceBetween(parent, node) < distanceBetween(node, closest)) closest = parent;
+        if (net.get(parent) == null) return closest;
+        Iterator<Origin> iterator = net.get(parent).iterator();
+        while (iterator.hasNext()) {
+            Origin target = iterator.next();
+            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
+                iterator.remove();
+                insert(node, target);
+                continue;
+            }
+            Origin found = findClosest(node, target, closest);
+            if (distanceBetween(node, found) < distanceBetween(node, closest)) closest = found;
+        }
+        return closest;
+    }
+
+    public double distanceBetween(Origin p, Origin q) {
+        return Math.sqrt(Math.pow(p.x() - q.x(), 2) + Math.pow(p.y() - q.y(), 2));
+    }
+
+    public void insert(Origin node, Origin child) {
+        if (net.containsKey(node)) {
+            HashSet<Origin> set = net.get(node);
             set.add(child);
             // this is actually equivalent to the line below
         } else {
-            map.put(node, new HashSet<>());
-            map.get(node).add(child);
+            net.put(node, new HashSet<>());
+            net.get(node).add(child);
         }
     }
 
     public ArrayList<Origin> origins() {
         return list;
-    }
-
-    public Origin findClosest(Origin node) {
-        if (list.size() == 0) return node;
-        if (node == null) return null;
-        int x= node.x(), y = node.y();
-        // from the tree? from the grid? any existing node would be in both.
-        //from tree: traverse tree;
-        //from grid: traverse grid;
-        //either is slow
-        //either is fine
-        // even though traversing the tree seem slow, but implementation is based on hashmap, super fast
-        // and it
-        double minDistance = Double.MAX_VALUE;
-        Origin closest = new Origin(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        double min;
-        // clearly a node gets the max node instead of a real node
-        for (Origin target : list) {
-            if (target.equals(node)  || map.containsKey(target) && map.get(target).contains(node)) continue;
-            min = distanceBetween(x, y, target.x(), target.y());
-            if (min < minDistance) {
-                closest = target;
-                minDistance = min;
-            }
-
-        }
-//        mapChild(closest, node);
-        return closest;
-    }
-
-    public double distanceBetween(int a, int b, int c, int d) {
-        return Math.sqrt(Math.pow(a - c, 2) + Math.pow(b - d, 2));
     }
 
 }
