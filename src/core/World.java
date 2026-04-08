@@ -104,6 +104,12 @@ public class World {
 
     // this one is completely wrong
     public void connectOrigins(Origin parent, Origin child) {
+        ren.renderFrame(grid);
+        try { // tree heap;
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println(parent + " to " + child);
         int a = parent.x(); int b = parent.y();
         int m = child.x(); int n = child.y();

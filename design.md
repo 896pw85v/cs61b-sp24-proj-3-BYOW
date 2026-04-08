@@ -6,8 +6,8 @@ The point is to manipulate a 2D grid and place:
 
 I don't need to worry about the rendering and stuff. Every drawing, sizing, tilling problem is handled in the skeleton coded. Thank you so much! I just need to create a Tile[][] and feed it to the renderer.  
 The problem being how to place the rooms in a messy way and occupy 50% of the grid, and the other problem is how to connect every single room on the grid.   
-My idea is to generate at least 3*3 blocks, and keep generating at random so that the total area exceeds some amount. And also, keep their information in some list.   
-Then, by the list, every rooms is connected by a 3 block wide path, until the last one is connected, then there will be one single path that connects all the room. Of course, it's boring. Another idea is to store them in some kind of graph, that represents their actual location and distance, then use shortest path or something to find the order to connect them, then generate the paths. Hallways doesn't have to have turns, that's great news meaning that simply connect point to point is sufficient, only straight up down left right.  
+~~My idea is to generate at least 3*3 blocks, and keep generating at random so that the total area exceeds some amount. And also, keep their information in some list.~~   
+~~Then, by the list, every rooms is connected by a 3 block wide path, until the last one is connected, then there will be one single path that connects all the room. Of course, it's boring.~~ Another idea is to store them in some kind of graph, that represents their actual location and distance, then use shortest path or something to find the order to connect them, then generate the paths. Hallways doesn't have to have turns, that's great news meaning that simply connect point to point is sufficient, only straight up down left right.  
 Saving should work by storing seeds.   
 > A very important thing to notice is that grid is bottom to top, so 0th row should be drawn at the bottom. 
 
@@ -64,7 +64,7 @@ OK if we stick to java.util, we can use a hashMap to map parent to children, use
         */
     }
 ```
-
+However, the hashmap data structure doesn't maintain a tree-like structure during connection. And the algorithm failed to prevent cycles. 
 
 ### Origins
 *Update*: the smart ide showed me `record`, `Origin` much simpler.   
@@ -75,6 +75,7 @@ any coordinate is denoted as two integers, for now we put them in a int[2].
 ## 2 Algorithm
 
 ### ~~Rooms~~
+*\*This is pretty much the final decision, however the consideration of different cases or `Room` class is abolished.*  
 Rooms have an origin coordinate at the bottom left. There are two ways to put them: 
 - Random  
 generate random origin and size, repeate until total area > 50% of grid. This bring 3 cases:
@@ -112,15 +113,21 @@ Another advantage of this approach is that growing the continent, we can add the
 
 Actually this also works if we place rooms, since the genius of it is generating floors first then walls. It's just that rooms are not as easy to trace as vertices in graph. And it would be more efficient to track rooms instead of thousands of blocks. And it makes the rooms more rectangular.
 
+This idea is not adopted because it is harder to implement than I think. To avoid QR code from continuously spawning blocks at random, sophisticated expansion is needed. However, there is no clever way (from me) to expand a room-like shape, that is not circle but still varies varies in shape. 
+
 ### Room with Origin
-We don't need to manage all blocks.   
+We don't need to manage all blocks. That way we don't need a object.    
 Generate a square room, pick any one block as origin, continue to spawn, no need to worry about overlapping.   
 When room area is large enough, for each origin build a path to the closest origin with one turn. The turn will likely fall in the room area so the hallway appears straight.   
 Since origins search the closest origin as if breadth first search, as if shortest path, should be good.   
-Origin search can be maintained in a graph or something during spawning to save runtime. 
-Path finding should find path with shortest length, using something like weightedd or dynamic planning.   
+~~Origin search can be maintained in a graph or something during spawning to save runtime.~~  
+In the current design, with list and map, origins should not be connected during generating because the algorithm that adds new nodes is so simple that it doesn't maintain itself like a heap, making the scenario that even though a newly spawned node is a better candidate for connection, it is ignored.   
+In the new algorithm, the connection is executed after room generation; however, cycle is not prevented because simply looking for the closest origin would cause far land to connected to each other, especially with the list and map data structure. Tracing down the mapping would work but I want to avoid that because typical case is there is no cycle but the algorithm traced down the whole map, for every node. 
+**We need a tree-heap-like data structure.**  
+Good news is we already have a simple function that calculates the distance, could be of use. 
+~~Path finding should find path with shortest length, using something like weightedd or dynamic planning.~~ I don't even know what I'm saying here.  
 ~~Try this: When generating new rooms, detect first whether the point is a floor. If yes, skip; if no, spawn room. This way we can avoid a lot of overlaps.~~  
-No it doesn't work. 
+No it doesn't work. There is no significant difference. If any it actually increase side by side rooms which is uglier. 
 
 ### ~~Hallway~~
 This is so much harder.  
