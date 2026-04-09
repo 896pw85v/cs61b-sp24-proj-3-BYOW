@@ -160,6 +160,10 @@ Good news is we already have a simple function that calculates the distance, cou
 ~~Try this: When generating new rooms, detect first whether the point is a floor. If yes, skip; if no, spawn room. This way we can avoid a lot of overlaps.~~  
 No it doesn't work. There is no significant difference. If any it actually increase side by side rooms which is uglier. 
 
+### centering
+Another idea of connecting origins is to instead of calculating over and over the distance between the origins, simply calculate their distance to the center of the screen. 
+That way they have a value that's unique to them, meaning that they can be operated like a heap. Well actually this works as well if we pick any `Origin` to act as the center. 
+
 ### ~~Hallway~~
 This is so much harder.  
 The point is to, first, have two rooms with no other room in between, then find two points on the wall that lies on the same line, connect them, break room wall and place hallway walls. All these steps are hard.   

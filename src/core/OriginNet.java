@@ -27,7 +27,7 @@ public class OriginNet {
 //            Origin parent = findClosest(origin, list.getFirst(), distanceBetween(origin, list.getFirst()));
             Origin parent = findClosest(origin, list.getFirst(), list.getFirst());
             if (parent.equals(origin)) continue;
-            System.out.println(origin + " " + parent + " " + distanceBetween(origin, parent));
+
             insert(parent, origin);
         }
     }
@@ -57,17 +57,19 @@ public class OriginNet {
 //    }
 
     public Origin findClosest(Origin node, Origin parent, Origin closest) {
-//        System.out.println(parent);
+        System.out.println(node + " " + parent + " " + distanceBetween(node, parent));
         if (distanceBetween(parent, node) < distanceBetween(node, closest)) closest = parent;
         if (net.get(parent) == null) return closest;
         Iterator<Origin> iterator = net.get(parent).iterator();
         while (iterator.hasNext()) {
             Origin target = iterator.next();
-            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
-                iterator.remove();
-                insert(node, target);
-                continue;
-            }
+//            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
+//                iterator.remove();
+//                Origin huh = findClosest(node, target, target);
+//
+//                insert(node, huh);
+//                continue;
+//            }
             Origin found = findClosest(node, target, closest);
             if (distanceBetween(node, found) < distanceBetween(node, closest)) closest = found;
         }

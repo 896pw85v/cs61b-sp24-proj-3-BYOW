@@ -18,10 +18,11 @@ public class Main {
 //        655081307     index 70 out of 70
 //        679430966     wrong closest (12, 12)
 //        552674602     wrong closest, with image
+//        934267690     wrong closest
 
         World world = new World(70, 40);
         world.setSeed(seed);
-        world.setSeed(679430966);
+//        world.setSeed(934267690);
         world.what();
 
         TERenderer renderer = new TERenderer();
