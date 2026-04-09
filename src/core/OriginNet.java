@@ -13,9 +13,15 @@ import java.util.Iterator;
 public class OriginNet {
     public ArrayList<Origin> list = new ArrayList<>();
     public HashMap<Origin, HashSet<Origin>> net = new HashMap<>();
+    public final Origin center;
 
     public OriginNet() {
         // do nothing
+        center = new Origin(0, 0);
+    }
+
+    public OriginNet(int length, int width) {
+        center = new Origin(length / 2, width / 2);
     }
 
     public void addNode(Origin node) {
@@ -27,6 +33,7 @@ public class OriginNet {
 //            Origin parent = findClosest(origin, list.getFirst(), distanceBetween(origin, list.getFirst()));
             Origin parent = findClosest(origin, list.getFirst(), list.getFirst());
             if (parent.equals(origin)) continue;
+            if (distanceBetween(parent, origin) < 5) continue;
 
             insert(parent, origin);
         }
@@ -63,17 +70,22 @@ public class OriginNet {
         Iterator<Origin> iterator = net.get(parent).iterator();
         while (iterator.hasNext()) {
             Origin target = iterator.next();
-//            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
-//                iterator.remove();
+            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
+                iterator.remove();
 //                Origin huh = findClosest(node, target, target);
-//
-//                insert(node, huh);
-//                continue;
-//            }
+
+                insert(node, target);
+                continue;
+            }
             Origin found = findClosest(node, target, closest);
             if (distanceBetween(node, found) < distanceBetween(node, closest)) closest = found;
         }
         return closest;
+    }
+
+    public void insert(Origin node) {
+        double value = distanceBetween(node, center);
+        treeInsert(node, tree.head());
     }
 
     public double distanceBetween(Origin p, Origin q) {

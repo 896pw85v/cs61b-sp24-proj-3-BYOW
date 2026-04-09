@@ -13,7 +13,7 @@ public class World {
     int area = 0;
     Random r;
     TETile[][] grid;
-    OriginNet originNet = new OriginNet();
+    OriginNet originNet = new OriginNet(length, width);
     TERenderer ren = new TERenderer();
 
     public World(int length, int width) {
@@ -32,7 +32,7 @@ public class World {
 
     public void what() {
 
-        while (area < length * width / 20) {
+        while (area < length * width / 10) {
             ren.renderFrame(grid);
 
             int x = r.nextInt(1, length - 3);
