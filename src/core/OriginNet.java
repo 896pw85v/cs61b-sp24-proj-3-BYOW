@@ -31,11 +31,12 @@ public class OriginNet {
     public void buildNet() {
         for (Origin origin : list) {
 //            Origin parent = findClosest(origin, list.getFirst(), distanceBetween(origin, list.getFirst()));
-            Origin parent = findClosest(origin, list.getFirst(), list.getFirst());
-            if (parent.equals(origin)) continue;
+//            Origin parent = findClosest(origin, list.getFirst(), list.getFirst());
+            Origin parent = findClosest(origin);
+            if (parent.equals(origin)) insert(origin, parent);
             if (distanceBetween(parent, origin) < 5) continue;
 
-            insert(parent, origin);
+            insert(origin, parent);
         }
     }
 
@@ -63,29 +64,40 @@ public class OriginNet {
 //        return findClosest(node, closest, minDistance);
 //    }
 
-    public Origin findClosest(Origin node, Origin parent, Origin closest) {
-        System.out.println(node + " " + parent + " " + distanceBetween(node, parent));
-        if (distanceBetween(parent, node) < distanceBetween(node, closest)) closest = parent;
-        if (net.get(parent) == null) return closest;
-        Iterator<Origin> iterator = net.get(parent).iterator();
-        while (iterator.hasNext()) {
-            Origin target = iterator.next();
-            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
-                iterator.remove();
-//                Origin huh = findClosest(node, target, target);
+//    public Origin findClosest(Origin node, Origin parent, Origin closest) {
+//        System.out.println(node + " " + parent + " " + distanceBetween(node, parent));
+//        if (distanceBetween(parent, node) < distanceBetween(node, closest)) closest = parent;
+//        if (net.get(parent) == null) return closest;
+//        Iterator<Origin> iterator = net.get(parent).iterator();
+//        while (iterator.hasNext()) {
+//            Origin target = iterator.next();
+//            if (distanceBetween(node, target) <= distanceBetween(target, parent)) {
+//                iterator.remove();
+////                Origin huh = findClosest(node, target, target);
+//
+//                insert(node, target);
+//                continue;
+//            }
+//            Origin found = findClosest(node, target, closest);
+//            if (distanceBetween(node, found) < distanceBetween(node, closest)) closest = found;
+//        }
+//        return closest;
+//    }
 
-                insert(node, target);
-                continue;
+    public Origin findClosest(Origin node) {
+        double min = Double.MAX_VALUE;
+        Origin closest = new Origin(Integer.MAX_VALUE, Integer.MAX_VALUE);
+//        closest = node;
+        if (net.isEmpty()) return node;
+        for (Origin target : net.keySet()) {
+            System.out.println(net.keySet());
+            double d = distanceBetween(target, node);
+            if (d < min) {
+                closest = target;
+                min = d;
             }
-            Origin found = findClosest(node, target, closest);
-            if (distanceBetween(node, found) < distanceBetween(node, closest)) closest = found;
         }
         return closest;
-    }
-
-    public void insert(Origin node) {
-        double value = distanceBetween(node, center);
-        treeInsert(node, tree.head());
     }
 
     public double distanceBetween(Origin p, Origin q) {

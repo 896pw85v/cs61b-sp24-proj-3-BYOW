@@ -32,15 +32,15 @@ public class World {
 
     public void what() {
 
-        while (area < length * width / 10) {
+        while (area < length * width / 3) {
             ren.renderFrame(grid);
 
-            int x = r.nextInt(1, length - 3);
-            int y = r.nextInt(1, width - 3);
+            int x = r.nextInt(1, length - 4);
+            int y = r.nextInt(1, width - 4);
 //            if (grid[x][y] == Tileset.FLOOR) continue;
 
-            int xp = r.nextInt(x + 1, length - 1);
-            int yp = r.nextInt(y + 1, width - 1);
+            int xp = r.nextInt(x + 2, length - 1);
+            int yp = r.nextInt(y + 2, width - 1);
 
 
             if (xp - x > 5) xp = x + 5;
@@ -49,10 +49,10 @@ public class World {
 
             int ox;
             int oy;
-
-                ox = r.nextInt(x, xp + 1);
-
-                oy = r.nextInt(y, yp + 1);
+//            ox = r.nextInt(x, xp + 1);
+//            oy = r.nextInt(y, yp + 1);
+            ox = Math.round((float) (x + xp) / 2);
+            oy = Math.round((float) (y + yp) / 2);
 
 //            if (grid[ox][oy] == Tileset.FLOOR) continue;
 
