@@ -37,6 +37,7 @@ public class OriginNet {
             if (distanceBetween(parent, origin) < 5) continue;
 
             insert(origin, parent);
+
         }
     }
 

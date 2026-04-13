@@ -155,6 +155,10 @@ Fixing by inserting during spawn won't work because the list reflects the order 
 
 ![img_2.png](img_2.png)
 ![img_1.png](img_1.png)
+Fixed, or not fixed, by a brute force insertion. It's not even a tree or a heap or anything and works really dumb. 
+Everytime a new node inserts, find the closest, and add it to its child. Simply wasting space cuz every hash set contains one child. 
+Every node gets two connections, its child and its parent. The child will never change, but many node will add it to their children. 
+Like a reversed tree, the branches points to the parent. This still doesn't fix the long path problem cuz it doesn't modify any relationship. 
 Good news is we already have a simple function that calculates the distance, could be of use. 
 ~~Path finding should find path with shortest length, using something like weightedd or dynamic planning.~~ I don't even know what I'm saying here.  
 ~~Try this: When generating new rooms, detect first whether the point is a floor. If yes, skip; if no, spawn room. This way we can avoid a lot of overlaps.~~  
