@@ -48,12 +48,15 @@ public class Main {
             }
             if (out) break;
         }
+        String input = "aasdwasdwadwasdwwwwwwwdddddddsdsdsdsdsdwadasdwasdwad:q";
+        int at = 0;
         while (true) {
-            if (StdDraw.hasNextKeyTyped()) {
+            if (input.length() > at) {
                 int onx = 0;
                 int ony = 0;
                 TETile tar;
-                char c = StdDraw.nextKeyTyped();
+                char c = input.charAt(at);
+                at++;
                 System.out.println(c);
                 switch (c) {
                     case 'a':
@@ -68,8 +71,8 @@ public class Main {
                     case 'w':
                         ony = 1;
                         break;
-                    case 'q':
-                        if (StdDraw.hasNextKeyTyped() && StdDraw.nextKeyTyped() == 'q') System.exit(1);
+                    case ':':
+                        if (at < input.length() && input.charAt(at) == 'q') System.exit(1);
                     default:
                         break;
                 }
